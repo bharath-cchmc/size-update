@@ -1,0 +1,10 @@
+{
+  "name": "bharath",
+  "description": "size query of libraries",
+  "version": "0.0.1",
+  "dependencies": {
+    "fs": "0.0.2",
+    "get-folder-size": "^1.0.0",
+    "mysql": "^2.10.2"
+  }
+}
