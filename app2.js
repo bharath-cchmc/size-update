@@ -16,7 +16,7 @@ connection.connect();
 // Retrieving a list of libraries
 function libraries(callback){
     var lib = lib;
-    connection.query("SELECT uid FROM labdata", function(err,result){
+    connection.query("SELECT uid FROM labdata WHERE deleted = 0;", function(err,result){
 	if (err){console.log(err);}
 	callback({lib:result});
 });
@@ -35,21 +35,18 @@ function size(dir, callback){
 	callback({siz:size});
 });
 }
-
+var dir = '/wardrobe/RAW-DATA/';
 // Main function
 libraries(function(dummy){
-    var LIBRARY = [];
-    var SIZE = [];
-    var dir = '/wardrobe/RAW-DATA/';
-    for(var i=0; i<dummy.lib.length; i++){LIBRARY[i] = dummy.lib[i].uid}
-    for (var j=0; j<LIBRARY.length; j++){
-	size(dir+LIBRARY[j], function(dummy) {
-	    //console.log(dummy.siz + "bytes");
-	    SIZE.push(dummy.siz);
-	    if(SIZE.length== LIBRARY.length){
-		for(var k=0; k<LIBRARY.length; k++){sizeadd(SIZE[k],LIBRARY[k],function(dummy){});}
-		connection.end();
-		}
-	});
+     for(var i=0; i<dummy.lib.length; i++){
+        var _UID = dummy.lib[i].uid;
+        if (fs.existsSync(dir+_UID)) {
+            function _up(_UID,err,size){
+                if(err){console.log(err);}
+                connection.query("UPDATE labdata SET SIZE =? WHERE uid =?", [size, _UID])
+            }
+            var up = _up.bind(undefined,_UID);
+            getSize(dir+_UID,up);
+        }
     }
 });
